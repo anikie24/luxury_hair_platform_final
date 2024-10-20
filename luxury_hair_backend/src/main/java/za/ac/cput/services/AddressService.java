@@ -6,32 +6,37 @@ import za.ac.cput.domain.Address;
 import za.ac.cput.repository.AddressRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AddressService implements IAddressService {
-    private AddressRepository repo;
+
+    private final AddressRepository repository;
+
     @Autowired
-    AddressService(AddressRepository repository){
-         this.repo = repository;
+    public AddressService(AddressRepository repository) {
+        this.repository = repository;
     }
 
     @Override
-    public List<Address> getall() {
-        return repo.findAll();
+    public List<Address> getAll() {
+        return repository.findAll();
     }
 
     @Override
     public Address create(Address address) {
-        return repo.save(address);
+        return repository.save(address);
     }
 
     @Override
-    public Address read(Long aLong) {
-        return repo.findById(aLong).orElse(null);
+    public Address read(Long id) {
+        Optional<Address> address = repository.findById(id);
+        return address.orElse(null);
     }
 
     @Override
     public Address update(Address address) {
-        return repo.save(address);
+        return null;
     }
+
 }

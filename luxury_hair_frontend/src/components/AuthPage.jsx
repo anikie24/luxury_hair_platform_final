@@ -1,20 +1,56 @@
-import React, { useEffect,useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../assets/AuthPage.css";
 import { v4 as uuidv4 } from "uuid";
+
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState([]);
 
+  
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
+
+  const fetchCartItems = async (userId) => {
+    try {
+      const token = getToken(); 
+
+      const response = await axios.get(
+        `http://localhost:8080/LuxuryHairVendingSystemDB/cart/user/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, 
+          },
+        }
+      );
+      const cartData = response.data.map((item) => ({
+        productId: item.product.productId,
+        cartId: item.cartId,
+        hairStyle: item.product.hairTexture,
+        selectedLength: item.product.hairSize,
+        selectedColor: item.product.hairColor,
+        selectedStyle: item.product.hairStyle,
+        hairPrice: item.product.hairPrice,
+        quantity: item.quantity,
+      }));
+
+      setCartItems(cartData);
+      localStorage.setItem("cart", JSON.stringify(cartData));
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+    }
+  };
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
     setErrorMessage("");
   };
-  
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage("");
@@ -33,7 +69,7 @@ const AuthPage = () => {
           `http://localhost:8080/LuxuryHairVendingSystemDB/userlogin/email-exists?email=${email}`
         );
         if (emailCheckResponse.data.exists) {
-          throw new Error("Email already exists. Please log in.");
+          throw new Error("Email has already been taken");
         }
 
         const fullName = formData.get("fullName");
@@ -65,30 +101,56 @@ const AuthPage = () => {
             password,
           }
         );
-        
+
         if (response.status === 200) {
           console.log("Logged in successfully:", response.data);
-          const userId = response.data.match(/UserId: (\d+)/)[1];                   
-          localStorage.setItem("userId", userId);
-          localStorage.setItem("isLogin", true);
-          navigate(-1);
-          alert("Login Successful!");
-         
+
+          const { userId, userType, token } = response.data;
+
+          if (userId && userType && token) {
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("isLogin", true);
+            localStorage.setItem("userType", userType);
+            localStorage.setItem("token", token);
+
+            if (userType === "admin") {
+              navigate("/AdminProduct");
+            } else if (userType === "customer") {
+              navigate("/");
+            } else {
+              navigate("/");
+            }
+
+            await fetchCartItems(userId);
+            alert("Login Successful!");
+            location.reload();
+          } else {
+            throw new Error(
+              "Invalid response from server. Missing userId, userType, or token."
+            );
+          }
         } else {
           throw new Error("Invalid login credentials");
         }
-        
-        
       }
     } catch (error) {
-      setErrorMessage(error.message);
-      setShowPopup(true);
+      if (error.response && error.response.status === 401) {
+        setErrorMessage("Invalid login credentials. Please try again.");
+        setShowPopup(true);
+      } else {
+        setErrorMessage(error.message);
+        setShowPopup(true);
+      }
     }
   };
 
   const closePopup = () => {
     setShowPopup(false);
     setErrorMessage("");
+  };
+
+  const handleExit = () => {
+    navigate("/");
   };
 
   return (
@@ -104,6 +166,9 @@ const AuthPage = () => {
         </div>
       )}
       <div className="form-container">
+        <button className="exit-btn" onClick={handleExit}>
+          X
+        </button>
         <h2>{isLogin ? "Login" : "Sign Up"}</h2>
         <form onSubmit={handleSubmit}>
           {!isLogin && (

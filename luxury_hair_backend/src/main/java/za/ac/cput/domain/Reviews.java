@@ -2,142 +2,140 @@ package za.ac.cput.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import java.util.Objects;
 
 @Entity
 public class Reviews {
+
     @Id
-    private String ReviewId;
-    private String ReviewTitle;
+    private String reviewId;
+    private String ReviewerName;
     private String ReviewDescription;
     private String ReviewDate;
-    private  int Rating;
-    private String serviceName;
-    private String ReviewStatus;
-    private String imageUrl;
+    private int Rating;
+    @ManyToOne
+    @JoinColumn(name="productId",referencedColumnName = "productid")
+    private Product product;
 
-    public Reviews(){
 
+    public Reviews() {
     }
-    public Reviews(Builder builder){
-        this.ReviewId=builder.ReviewId;
-        this.ReviewTitle=builder.ReviewTitle;
-        this.ReviewDescription=builder.ReviewDescription;
-        this.Rating=builder.Rating;
-        this.ReviewDate=builder.ReviewDate;
-        this.serviceName=builder.serviceName;
-        this.ReviewStatus=builder.ReviewStatus;
-        this.imageUrl=builder.imageUrl;
 
+    public Reviews(Builder builder) {
+        this.reviewId = builder.reviewId;
+        this.ReviewerName = builder.ReviewerName;
+        this.ReviewDescription = builder.ReviewDescription;
+        this.Rating = builder.Rating;
+        this.ReviewDate = builder.ReviewDate;
+        this.product = builder.product;
     }
+
+    // Getters and Setters
     public String getReviewId() {
-        return ReviewId;
+        return reviewId;
     }
 
-    public String getReviewTitle() {
-        return ReviewTitle;
+    public String getReviewerName() {
+        return ReviewerName;
     }
 
     public String getReviewDescription() {
         return ReviewDescription;
     }
+
     public String getReviewDate() {
         return ReviewDate;
     }
+
     public int getRating() {
         return Rating;
     }
-    public String getServiceName() {
-        return serviceName;
-    }
-    public String getReviewStatus() {
-        return ReviewStatus;
-    }
-    public String getImageUrl() {
-        return imageUrl;
+
+    public Product getProduct() {
+        return product;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Reviews reviews)) return false;
-        return Rating == reviews.Rating && Objects.equals(ReviewId, reviews.ReviewId) && Objects.equals(ReviewTitle, reviews.ReviewTitle) && Objects.equals(ReviewDescription, reviews.ReviewDescription) && Objects.equals(ReviewDate, reviews.ReviewDate) && Objects.equals(serviceName, reviews.serviceName) && Objects.equals(ReviewStatus, reviews.ReviewStatus) && Objects.equals(imageUrl, reviews.imageUrl);
+        return Rating == reviews.Rating &&
+                Objects.equals(reviewId, reviews.reviewId) &&
+                Objects.equals(ReviewerName, reviews.ReviewerName) &&
+                Objects.equals(ReviewDescription, reviews.ReviewDescription) &&
+                Objects.equals(ReviewDate, reviews.ReviewDate) &&
+                product == reviews.product;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ReviewId, ReviewTitle, ReviewDescription, ReviewDate, Rating, serviceName, ReviewStatus, imageUrl);
+        return Objects.hash(reviewId, ReviewerName, ReviewDescription, ReviewDate, Rating, product);  // Include productId in hashCode
     }
 
     @Override
     public String toString() {
         return "Reviews{" +
-                "ReviewId='" + ReviewId + '\'' +
-                ", ReviewTitle='" + ReviewTitle + '\'' +
+                "reviewId='" + reviewId + '\'' +
+                ", ReviewerName='" + ReviewerName + '\'' +
                 ", ReviewDescription='" + ReviewDescription + '\'' +
                 ", ReviewDate='" + ReviewDate + '\'' +
                 ", Rating=" + Rating +
-                ", serviceName='" + serviceName + '\'' +
-                ", ReviewStatus='" + ReviewStatus + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
+                ", productId=" + product +
                 '}';
     }
-    public static class Builder{
-        private String ReviewId;
-        private String ReviewTitle;
+
+    public static class Builder {
+        private String reviewId;
+        private String ReviewerName;
         private String ReviewDescription;
         private String ReviewDate;
         private int Rating;
-        private String serviceName;
-        private String ReviewStatus;
-        private String imageUrl;
+        private  Product product;
 
-        public Builder setReviewId(String ReviewId) {
-            this.ReviewId = ReviewId;
+        public Builder setReviewId(String reviewId) {
+            this.reviewId = reviewId;
             return this;
         }
-        public Builder setReviewTitle(String ReviewTitle) {
-            this.ReviewTitle = ReviewTitle;
+
+        public Builder setReviewerName(String ReviewerName) {
+            this.ReviewerName = ReviewerName;
             return this;
         }
+
         public Builder setReviewDescription(String ReviewDescription) {
             this.ReviewDescription = ReviewDescription;
             return this;
         }
+
         public Builder setReviewDate(String ReviewDate) {
             this.ReviewDate = ReviewDate;
             return this;
         }
+
         public Builder setRating(int Rating) {
             this.Rating = Rating;
             return this;
         }
-        public Builder setServiceName(String serviceName) {
-            this.serviceName = serviceName;
+
+        public Builder setProduct(Product product) {
+            this.product =  product;
             return this;
         }
 
-        public Builder setReviewStatus(String ReviewStatus) {
-            this.ReviewStatus = ReviewStatus;
+        public Builder copy(Reviews reviews) {
+            this.reviewId = reviews.reviewId;
+            this.ReviewerName = reviews.ReviewerName;
+            this.ReviewDescription = reviews.ReviewDescription;
+            this.ReviewDate = reviews.ReviewDate;
+            this.Rating = reviews.Rating;
+            this.product =  reviews.product;
             return this;
         }
-        public Builder setImageUrl(String imageUrl) {
-            this.imageUrl = imageUrl;
-            return this;
-        }
-        public Builder copy(Reviews reviews){
-            this.ReviewId=reviews.ReviewId;
-            this.ReviewTitle=reviews.ReviewTitle;
-            this.ReviewDescription=reviews.ReviewDescription;
-            this.ReviewDate=reviews.ReviewDate;
-            this.Rating=reviews.Rating;
-            this.serviceName=reviews.serviceName;
-            this.ReviewStatus=reviews.ReviewStatus;
-            this.imageUrl=reviews.imageUrl;
-            return this;
-        }
-        public Reviews build(){
+
+        public Reviews build() {
             return new Reviews(this);
         }
     }

@@ -80,7 +80,7 @@ public class ProductController {
         try {
             Optional<byte[]> optionalImageBytes = Optional.ofNullable(service.getProductImageById(productId));
 
-            // Check if the optional contains a value
+
             if (optionalImageBytes.isPresent()) {
                 String base64Image = Base64.getEncoder().encodeToString(optionalImageBytes.get());
                 return new ResponseEntity<>(base64Image, HttpStatus.OK);

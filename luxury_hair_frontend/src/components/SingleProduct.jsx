@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../main.css";
 import "../assets/singleProduct.css";
 
-//hopefully this one has no errors
 const SingleProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -16,25 +16,47 @@ const SingleProduct = () => {
   const [selectedStyle, setSelectedStyle] = useState("Customized");
   const [quantity, setQuantity] = useState(1);
 
+  const renderStars = (rating) => {
+    const totalStars = 5;
+    let stars = [];
+    for (let i = 0; i < totalStars; i++) {
+      stars.push(
+        <span key={i} className={i < rating ? "filled-star" : "empty-star"}>
+          ★
+        </span>
+      );
+    }
+    return stars;
+  };
+
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_BACK_END_URL;
 
-    fetch(`${baseUrl}/product/read/${id}`)
-      .then((response) => {
+    const token = localStorage.getItem("token");
+
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/product/read/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return response.json();
-      })
-      .then((data) => {
+
+        const data = await response.json();
         setProduct(data);
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("There was an error fetching the product:", error);
         setError(error);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProduct();
   }, [id]);
 
   const handleAddToCart = () => {
@@ -49,25 +71,79 @@ const SingleProduct = () => {
       image: product.image,
     };
 
-    let cart = localStorage.getItem("cart");
-    cart = cart ? JSON.parse(cart) : [];
+    const userId = localStorage.getItem("userId");
 
-    const productIndex = cart.findIndex(
-      (item) =>
-        item.productId === cartProduct.productId &&
-        item.selectedLength === cartProduct.selectedLength &&
-        item.selectedColor === cartProduct.selectedColor &&
-        item.selectedStyle === cartProduct.selectedStyle
-    );
-
-    if (productIndex >= 0) {
-      cart[productIndex].quantity += cartProduct.quantity;
-    } else {
-      cart.push(cartProduct);
+    if (!userId) {
+      alert("You need to be logged in to add items to the cart.");
+      return;
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Product added to cart!");
+    const cartRequest = {
+      product: {
+        productId: product.productId,
+        hairStyle: product.hairStyle,
+        hairPrice: product.hairPrice,
+        hairTexture: product.hairTexture,
+        hairSize: product.hairSize,
+        hairColor: product.hairColor,
+        hairStock: product.hairStock,
+        image: product.image,
+      },
+      user: {
+        userId: userId,
+      },
+      quantity: quantity,
+    };
+
+    const baseUrl = import.meta.env.VITE_BACK_END_URL;
+
+    fetch(`http://localhost:8080/LuxuryHairVendingSystemDB/cart/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(cartRequest),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to add product to cart");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const { cartId } = data;
+
+        if (cartId) {
+          let cart = localStorage.getItem("cart");
+          cart = cart ? JSON.parse(cart) : [];
+
+          const productIndex = cart.findIndex(
+            (item) =>
+              item.productId === cartProduct.productId &&
+              item.selectedLength === cartProduct.selectedLength &&
+              item.selectedColor === cartProduct.selectedColor &&
+              item.selectedStyle === cartProduct.selectedStyle
+          );
+
+          if (productIndex >= 0) {
+            cart[productIndex].quantity += cartProduct.quantity;
+          } else {
+            cart.push(cartProduct);
+          }
+
+          localStorage.setItem("cart", JSON.stringify(cart));
+          alert("Product added to cart!");
+          console.log("Product added to cart:", data);
+          navigate("/products");
+          location.reload();
+        } else {
+          throw new Error("No cartId received from the backend");
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding product to cart:", error);
+        alert("There was an error adding the product to the cart.");
+      });
   };
 
   const handleBuyNow = () => {
@@ -157,6 +233,18 @@ const SingleProduct = () => {
                 perfect for extended wear.
               </p>
             </div>
+
+            {}
+            <div className="product-rating">
+              {renderStars(Math.round(product.averageRating))}
+              <span>({product.averageRating})</span>
+              <span className="product-reviews">
+                ({product.numReviews} Reviews)
+              </span>
+            </div>
+            <Link
+              to={`/product/${product.productId}/reviews`}
+              className="btn review-btn">Reviews</Link>
 
             <div className="mt-4 py-2">
               <button onClick={handleAddToCart} className="w-full">

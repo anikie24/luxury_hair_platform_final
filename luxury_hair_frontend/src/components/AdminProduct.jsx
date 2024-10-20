@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import Navbar from "./Navbar";
+//import Navbar from "./Navbar";
+import Navbar from "./AdminNavbar";
 import Footer from "./Footer";
 import productService from "../Services/ProductService";
 import "../assets/style.css";
@@ -14,15 +15,24 @@ const AdminProduct = () => {
     hairStyle: "",
     hairSize: "",
     hairColor: "",
-    hairStock: true, 
+    hairStock: true,
     hairPrice: "",
     image: null,
   });
   const [editingProduct, setEditingProduct] = useState(null);
 
+  
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
+
+ 
   const fetchProducts = async () => {
     try {
-      const data = await productService.getAllProducts();
+      const token = getToken();
+      if (!token) throw new Error("Unauthorized. Please login first.");
+
+      const data = await productService.getAllProducts(token); 
       setProducts(data);
       setLoading(false);
     } catch (error) {
@@ -62,7 +72,8 @@ const AdminProduct = () => {
   const handleCreateProduct = async (e) => {
     e.preventDefault();
     try {
-      await productService.createProduct(newProduct);
+      const token = getToken();
+      await productService.createProduct(newProduct, token); 
       alert("Product created successfully");
       fetchProducts();
       resetForm();
@@ -82,14 +93,15 @@ const AdminProduct = () => {
       hairColor: product.hairColor,
       hairStock: product.hairStock,
       hairPrice: product.hairPrice,
-      image: null, 
+      image: null,
     });
   };
 
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
     try {
-      await productService.updateProduct(newProduct);
+      const token = getToken();
+      await productService.updateProduct(newProduct, token); 
       alert("Product updated successfully");
       fetchProducts();
       resetForm();
@@ -102,7 +114,8 @@ const AdminProduct = () => {
 
   const handleDeleteProduct = async (productId) => {
     try {
-      await productService.deleteProduct(productId);
+      const token = getToken();
+      await productService.deleteProduct(productId, token); 
       alert("Product deleted successfully");
       fetchProducts();
     } catch (error) {

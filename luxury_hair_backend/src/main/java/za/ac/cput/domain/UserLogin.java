@@ -71,6 +71,10 @@ public class UserLogin {
                 '}';
     }
 
+    public void setPassword(String encode) {
+        this.password = encode;
+    }
+
     public static class Builder {
         private Long userId;
         private String email;

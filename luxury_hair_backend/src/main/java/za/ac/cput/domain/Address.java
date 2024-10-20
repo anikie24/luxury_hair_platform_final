@@ -1,24 +1,30 @@
 package za.ac.cput.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.util.Objects;
+
 @Entity
 public class Address {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long addressId;
-    private int houseNumber;
+
     private String streetName;
     private String city;
+    private String province;
     private int zipCode;
 
     public Address() {
     }
-    public Address(Builder builder){
+
+    public Address(Builder builder) {
         this.addressId = builder.addressId;
-        this.houseNumber = builder.houseNumber;
         this.streetName = builder.streetName;
+        this.province = builder.province;
         this.city = builder.city;
         this.zipCode = builder.zipCode;
     }
@@ -27,12 +33,12 @@ public class Address {
         return addressId;
     }
 
-    public int getHouseNumber() {
-        return houseNumber;
-    }
-
     public String getStreetName() {
         return streetName;
+    }
+
+    public String getProvince() {
+        return province;
     }
 
     public String getCity() {
@@ -48,29 +54,33 @@ public class Address {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Address address = (Address) o;
-        return houseNumber == address.houseNumber && zipCode == address.zipCode && Objects.equals(addressId, address.addressId) && Objects.equals(streetName, address.streetName) && Objects.equals(city, address.city);
+        return zipCode == address.zipCode &&
+                Objects.equals(addressId, address.addressId) &&
+                Objects.equals(streetName, address.streetName) &&
+                Objects.equals(province, address.province) &&
+                Objects.equals(city, address.city);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(addressId, houseNumber, streetName, city, zipCode);
+        return Objects.hash(addressId, streetName, province, city, zipCode);
     }
 
     @Override
     public String toString() {
-        return "AddressFactory{" +
+        return "Address{" +
                 "addressId=" + addressId +
-                ", houseNumber=" + houseNumber +
                 ", streetName='" + streetName + '\'' +
+                ", province='" + province + '\'' +
                 ", city='" + city + '\'' +
                 ", zipCode=" + zipCode +
                 '}';
     }
 
-    public static class Builder{
+    public static class Builder {
         private Long addressId;
-        private int houseNumber;
         private String streetName;
+        private String province;
         private String city;
         private int zipCode;
 
@@ -79,13 +89,13 @@ public class Address {
             return this;
         }
 
-        public Builder setHouseNumber(int houseNumber) {
-            this.houseNumber = houseNumber;
+        public Builder setStreetName(String streetName) {
+            this.streetName = streetName;
             return this;
         }
 
-        public Builder setStreetName(String streetName) {
-            this.streetName = streetName;
+        public Builder setProvince(String province) {
+            this.province = province;
             return this;
         }
 
@@ -99,15 +109,16 @@ public class Address {
             return this;
         }
 
-        public Builder copy(Address address){
+        public Builder copy(Address address) {
             this.addressId = address.addressId;
-            this.houseNumber = address.houseNumber;
             this.streetName = address.streetName;
+            this.province = address.province;
             this.city = address.city;
             this.zipCode = address.zipCode;
             return this;
         }
-        public Address build(){
+
+        public Address build() {
             return new Address(this);
         }
     }

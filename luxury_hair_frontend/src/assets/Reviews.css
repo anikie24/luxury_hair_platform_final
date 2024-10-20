@@ -1,102 +1,139 @@
 /* Reviews.css */
-
 .reviews {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+
 }
 
 .header {
+    display: flex;
     text-align: center;
     margin-bottom: 20px;
+
+
+
+
 }
+
+.back-button {
+    background-color: transparent;
+    border: none;
+    color: #4e4c4c;
+    /* Button color */
+    font-size: 1.2rem;
+    /* Slightly bigger than text */
+    cursor: pointer;
+    padding: 0;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    color: #4e4c4c;
+    /* Hover color */
+}
+
 
 .main-content {
     display: flex;
     flex-direction: column;
     align-items: center;
+    color: #101010;
+    /*for existing review */
+
+
 }
 
 .review-form-section {
     width: 100%;
     margin-bottom: 30px;
+
 }
 
 .review-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    color: #b35a00;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-}
 
-.image-preview {
-    max-width: 100px;
-    margin-top: 10px;
 }
 
 .existing-reviews-section {
     width: 100%;
+
 }
 
 .review-card {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     border-bottom: 1px solid #ddd;
     padding: 20px 0;
     gap: 20px;
+
+
 }
+
 
 .review-card:last-child {
     border-bottom: none;
+
 }
 
 .review-header {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    color: #1a1a1a;
+    /*for the reviewr name hearder*/
+
 }
 
 .review-rating {
-    color: #FFA500;
+    color: #f4a04b;
     /* Gold color for stars */
 }
 
 .review-date {
     font-size: 12px;
-    color: #666;
+    color: #666666;
+    /*color for date*/
 }
 
-.review-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 10px;
+.review-text {
+    font-size: 1rem;
+    color: #333;
+    margin-top: 5px;
 }
-
 
 
 .review-form-section {
     width: 100%;
     max-width: 600px;
-    background-color: white;
+    background-color: rgba(179, 175, 175, 0.01);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 40px;
+    color: #ec4c69;
 }
 
 .review-form-section h2 {
     text-align: center;
     font-size: 1.8rem;
-    color: #333;
+    color: rgba(179, 175, 175, 0.01);
     margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    color: #4e4c4c;
+    /* for the review name header*/
 }
 
 /* Form Group Styling */
@@ -109,25 +146,27 @@
 .review-form select {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid #ffffff;
     border-radius: 8px;
     box-sizing: border-box;
     font-size: 1rem;
-    background-color: #000000;
+    background-color: #101010;
     transition: border-color 0.3s;
 }
 
 .review-form input[type="text"]:focus,
 .review-form textarea:focus,
 .review-form select:focus {
-    border-color: #333;
-    background-color: #000000;
+    border-color: rgba(179, 175, 175, 0.01);
+    background-color: #101010;
     outline: none;
+    color: white;
 }
 
 .review-form textarea {
     height: 100px;
     resize: vertical;
+
 }
 
 /* Submit Button Styling */
@@ -146,5 +185,6 @@
 }
 
 .review-form button[type="submit"]:hover {
-    background-color: #444;
+    background-color: #f4a04b;
+
 }

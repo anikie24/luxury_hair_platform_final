@@ -10,26 +10,34 @@ const Product = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch products from the backend
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_BACK_END_URL;
 
-    fetch(`${baseUrl}/product/getall`)
-      .then((response) => {
+    const token = localStorage.getItem("token");
+
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/product/getall`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return response.json();
-      })
-      .then((data) => {
+
+        const data = await response.json();
         setProducts(data);
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("There was an error fetching the products:", error);
         setError(error);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   if (loading) {
@@ -62,7 +70,7 @@ const Product = () => {
               <p className="product-name">{product.hairStyle}</p>
               <p className="product-name">{product.hairSize} inches</p>
               <p className="product-name">{product.hairColor}</p>
-              <p className="product-name"> {product.hairStock}</p>
+              <p className="product-name">Stock: {product.hairStock}</p>
               <p className="product-price">Price: {product.hairPrice}</p>
               <Link to={`/product/${product.productId}`}>Purchase</Link>
             </div>

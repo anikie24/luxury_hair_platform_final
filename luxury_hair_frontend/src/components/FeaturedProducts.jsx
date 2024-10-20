@@ -7,25 +7,36 @@ const FeaturedProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch products from the database
+ 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_BACK_END_URL;
 
-    fetch(`${baseUrl}/product/getall`)
-      .then((response) => {
+    
+    const token = localStorage.getItem("token");
+
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/product/getall`, {
+          headers: {
+           
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
-        return response.json();
-      })
-      .then((data) => {
+
+        const data = await response.json();
         setProducts(data);
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         setError(error.message);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   if (loading) {
@@ -42,7 +53,7 @@ const FeaturedProducts = () => {
       <div className="product-list">
         {products.slice(0, 3).map((product) => (
           <div key={product.productId} className="product-card">
-            {/* Display base64-encoded image */}
+            {}
             {product.image ? (
               <img
                 src={`data:image/jpeg;base64,${product.image}`}
