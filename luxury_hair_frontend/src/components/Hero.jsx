@@ -9,7 +9,7 @@ const Hero = () => {
         <section id="home" className="hero">
             <div className="hero-content">
                 <h2>Elevate Your Style with Luxury Hair</h2>
-                <p>RAW HAIR | VIETNAMESE | BRAZILIAN | PERUVIAN</p>
+                <p>_________________________________________________________________</p>
                 <button className="product-button" onClick={() => navigate('/products')}>
                     SHOP NOW
                 </button>
